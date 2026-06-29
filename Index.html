@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古代言語解読ゲーム - 複数単語一括判定版</title>
+    <style>
+        /* ==========================================
+           CSS: 画面全体の配置と装飾
+           ========================================== */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a2e;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            text-align: center;
+        }
+
+        canvas {
+            background-color: #16213e;
+            border: 4px solid #0f3460;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .instructions {
+            margin-top: 15px;
+            color: #e94560;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="instructions">【操作】矢印キー: 記号の選択（上下左右） | Shift + A~Z: 辞書登録 | Enter: 最終一括判定</div>
+    </div>
+
+    <script>
+        // ------------------------------------------
+        // 1. 変数の定義と初期設定
+        // ------------------------------------------
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // シーン管理用の定数
+        const SCENE = { TITLE: 'TITLE', GAME: 'GAME', RESULT: 'RESULT' };
+        let currentScene = SCENE.TITLE;
+
+        // キー入力の状態
+        const keys = {};
+
+        // --- 【大幅変更】複数の単語と共通辞書のデータ構造 ---
+        const gameData = {
+            timer: 0,
+            
+            // 3つの単語が出題される（すべて3文字）
+            // 正解は 1: "CAT"（猫）, 2: "DOG"（犬）, 3: "COW"（牛）
+            // 登場するユニークな記号は全部で「6種類」
+            // ★=C, ●=A, ◆=T, ▲=D, ■=O, ✖=G, 🌀=W
+            stageWords: [
+                ["★", "●", "◆"],  // 1つ目の単語 (正解: CAT)
+                ["▲", "■", "✖"],  // 2つ目の単語 (正解: DOG)
+                ["★", "■", "🌀"]   // 3つ目の単語 (正解: COW) ※★や■が共通している！
+            ],
+            correctAnswers: ["CAT", "DOG", "COW"], // 最終的な正解リスト
+            
+            // 【カーソル管理】
+            // 今回は縦（単語の選択）と横（文字の選択）があるので、二次元で管理します
+            cursorY: 0, // 何番目の単語を選んでいるか (0〜2)
+            cursorX: 0, // その単語の何文字目を選んでいるか (0〜2)
+
+            // 【共通の翻訳辞書】
+            // ゲーム内に登場するすべての記号を網羅したプレイヤーの辞書
+            myDictionary: {
+                "★": "_", "●": "_", "◆": "_",
+                "▲": "_", "■": "_", "✖": "_", "🌀": "_"
+            },
+
+            // 最終判定の結果を格納する変数
+            isAllCorrect: false,
+            correctCount: 0 // 何個の単語が合っていたか
+        };
+
+        // ------------------------------------------
+        // 2. 初期化処理 (Initialization)
+        // ------------------------------------------
+        function init() {
+            window.addEventListener('keydown', (e) => {
+                if (keys[e.code]) return; 
+                keys[e.code] = true;
+                handleKeyPress(e);
+            });
+
+            window.addEventListener('keyup', (e) => {
+                keys[e.code] = false;
+            });
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        // ------------------------------------------
+        // 3. キー入力処理（二次元カーソル移動と辞書登録）
+        // ------------------------------------------
+        function handleKeyPress(e) {
+            const keyCode = e.code;
+            const keyChar = e.key.toUpperCase();
+
+            // 【タイトル画面】
+            if (currentScene === SCENE.TITLE) {
+                if (keyCode === 'Space') {
+                    currentScene = SCENE.GAME;
+                    gameData.timer = 0;
+                    gameData.cursorX = 0;
+                    gameData.cursorY = 0;
+                    gameData.correctCount = 0;
+                    // 辞書の初期化
+                    for (let key in gameData.myDictionary) {
+                        gameData.myDictionary[key] = "_";
+                    }
+                }
+            } 
+            // 【ゲームプレイ中】
+            else if (currentScene === SCENE.GAME) {
+                // 左右のカーソル移動（文字の選択）
+                if (keyCode === 'ArrowRight') {
+                    if (gameData.cursorX < 2) gameData.cursorX++;
+                } else if (keyCode === 'ArrowLeft') {
+                    if (gameData.cursorX > 0) gameData.cursorX--;
+                }
+                // 上下のカーソル移動（単語の選択）
+                else if (keyCode === 'ArrowDown') {
+                    if (gameData.cursorY < 2) gameData.cursorY++;
+                } else if (keyCode === 'ArrowUp') {
+                    if (gameData.cursorY > 0) gameData.cursorY--;
+                }
+                
+                // 【辞書登録】Shift + アルファベット
+                else if (e.shiftKey && keyChar.length === 1 && keyChar >= 'A' && keyChar <= 'Z') {
+                    // 現在カーソルがある位置の記号を特定
+                    const currentSymbol = gameData.stageWords[gameData.cursorY][gameData.cursorX];
+                    // 共通辞書に登録（これにより、同じ記号の場所がすべて一撃で変わる！）
+                    gameData.myDictionary[currentSymbol] = keyChar;
+                }
+                
+                // 選択中の文字を消去
+                else if (keyCode === 'Backspace') {
+                    const currentSymbol = gameData.stageWords[gameData.cursorY][gameData.cursorX];
+                    gameData.myDictionary[currentSymbol] = "_";
+                }
+
+                // 【重要】Enterキーで、全単語が合っているか一括で運命の判定！
+                else if (keyCode === 'Enter') {
+                    checkAllAnswers();
+                }
+            } 
+            // 【リザルト画面】
+            else if (currentScene === SCENE.RESULT) {
+                if (keyCode === 'Space') {
+                    currentScene = SCENE.TITLE;
+                }
+            }
+        }
+
+        // ------------------------------------------
+        // 4. 一括正誤判定 (Check All Answers)
+        // ------------------------------------------
+        function checkAllAnswers() {
+            let matchCount = 0;
+
+            // 3つの単語をループで1つずつチェック
+            for (let i = 0; i < gameData.stageWords.length; i++) {
+                let playerWord = "";
+                const wordLength = gameData.stageWords[i].length;
+
+                // 単語内の文字を辞書から翻訳して合体させる
+                for (let j = 0; j < wordLength; j++) {
+                    const symbol = gameData.stageWords[i][j];
+                    playerWord += gameData.myDictionary[symbol];
+                }
+
+                // 正解の単語リストと比較
+                if (playerWord === gameData.correctAnswers[i]) {
+                    matchCount++; // 合っていた単語数をカウント
+                }
+            }
+
+            gameData.correctCount = matchCount;
+
+            // 全ての単語（3つ）が一致していたらゲームクリア、リザルト画面へ！
+            if (matchCount === gameData.stageWords.length) {
+                gameData.isAllCorrect = true;
+                currentScene = SCENE.RESULT;
+            } else {
+                gameData.isAllCorrect = false;
+                // 全部当たっていなければリザルトには行かず、ゲーム画面のまま「何個当たっているか」を表示する（drawで制御）
+            }
+        }
+
+        // ------------------------------------------
+        // 5. 更新処理 (Update)
+        // ------------------------------------------
+        function update() {
+            if (currentScene === SCENE.GAME) {
+                gameData.timer += 1 / 60; 
+            }
+        }
+
+        // ------------------------------------------
+        // 6. 描画処理 (Draw)
+        // ------------------------------------------
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            switch (currentScene) {
+                case SCENE.TITLE:  drawTitle();  break;
+                case SCENE.GAME:   drawGame();   break;
+                case SCENE.RESULT: drawResult(); break;
+            }
+        }
+
+        function drawTitle() {
+            ctx.fillStyle = "#16213e";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#e94560";
+            ctx.font = "bold 40px 'Arial'";
+            ctx.textAlign = "center";
+            ctx.fillText("古代の暗号スクロール", canvas.width / 2, 200);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "18px 'Arial'";
+            ctx.fillText("3つの単語（すべて動物の名前）が隠されたスクロールがある。", canvas.width / 2, 280);
+            ctx.fillText("それぞれの記号は繋がっている。すべての謎を解き明かせ！", canvas.width / 2, 320);
+
+            ctx.fillStyle = "#f5b041";
+            ctx.font = "bold 16px 'Arial'";
+            ctx.fillText("※最後に【Enter】で一括答え合わせを行います", canvas.width / 2, 380);
+
+            ctx.fillStyle = "#aaa";
+            ctx.font = "16px 'Arial'";
+            ctx.fillText("[ Press Space to Start ]", canvas.width / 2, 480);
+        }
+
+        // --- 【大幅変更】3つの単語を並べて描画 ＆ 部分一致数の表示 ---
+        function drawGame() {
+            ctx.fillStyle = "#1a1a2e";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // UI: タイマー
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "20px 'Arial'";
+            ctx.textAlign = "left";
+            ctx.fillText(`解読時間: ${gameData.timer.toFixed(1)}秒`, 30, 40);
+
+            // ------------------------------------------
+            // 複数単語の描画（縦に3行並べる）
+            // ------------------------------------------
+            const startY = 130;  // 1行目のY座標
+            const rowSpacing = 85; // 行と行の間隔
+            const startX = 310;  // 1文字目のX座標
+            const colSpacing = 90; // 文字と文字の間隔
+
+            for (let y = 0; y < gameData.stageWords.length; y++) {
+                const currentWord = gameData.stageWords[y];
+                const drawY = startY + (y * rowSpacing);
+
+                // 単語のラベル（「単語1」など）
+                ctx.fillStyle = "#888";
+                ctx.font = "16px 'Arial'";
+                ctx.textAlign = "right";
+                ctx.fillText(`単語 ${y + 1}:`, startX - 50, drawY + 20);
+
+                for (let x = 0; x < currentWord.length; x++) {
+                    const drawX = startX + (x * colSpacing);
+                    const symbol = currentWord[x];
+                    const guess = gameData.myDictionary[symbol];
+
+                    // 現在プレイヤーが選択している1文字に枠をつける
+                    if (y === gameData.cursorY && x === gameData.cursorX) {
+                        ctx.fillStyle = "rgba(233, 69, 96, 0.2)";
+                        ctx.fillRect(drawX - 35, drawY - 20, 70, 75);
+                        ctx.strokeStyle = "#e94560";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(drawX - 35, drawY - 20, 70, 75);
+                    }
+
+                    // 記号（上段に小さめ、または並べて表示。今回は見やすさ重視で 記号(推測) の形に）
+                    ctx.fillStyle = "#4ecca3";
+                    ctx.font = "28px 'Arial'";
+                    ctx.textAlign = "center";
+                    ctx.fillText(symbol, drawX, drawY + 10);
+
+                    // 推測アルファベット（記号の下に表示）
+                    ctx.fillStyle = (guess === "_") ? "#555" : "#ffffff";
+                    ctx.font = "bold 26px 'Arial'";
+                    ctx.fillText(guess, drawX, drawY + 42);
+                }
+            }
+
+            // ------------------------------------------
+            // 中段：現在の採点状況（Enterを押した後に更新される）
+            // ------------------------------------------
+            ctx.fillStyle = "#e94560";
+            ctx.font = "bold 20px 'Arial'";
+            ctx.textAlign = "center";
+            // 1度でもEnterが押されて、かつ全問正解でないときだけ現在の正解数を出す
+            if (gameData.correctCount > 0 && !gameData.isAllCorrect) {
+                ctx.fillText(`現在の判定： 3個中 ${gameData.correctCount}個 の単語が合っています！`, canvas.width / 2, 385);
+            } else if (gameData.correctCount === 0 && keys['Enter']) {
+                // Enterを押したけど1つも合っていない場合
+                ctx.fillText(`現在の判定： 正解している単語はありません...`, canvas.width / 2, 385);
+            }
+
+            // ------------------------------------------
+            // 下段：共通翻訳辞書の一覧
+            // ------------------------------------------
+            ctx.strokeStyle = "#0f3460";
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(50, 415); ctx.lineTo(750, 415); ctx.stroke();
+
+            ctx.fillStyle = "#f5b041";
+            ctx.font = "16px 'Arial'";
+            ctx.fillText("ーー 翻訳辞書（全暗号の一覧） ーー", canvas.width / 2, 445);
+
+            const dictKeys = Object.keys(gameData.myDictionary);
+            const dictStartX = 140;
+            const dictSpacing = 85;
+
+            for (let j = 0; j < dictKeys.length; j++) {
+                const symbol = dictKeys[j];
+                const guess = gameData.myDictionary[symbol];
+                const drawX = dictStartX + (j * dictSpacing);
+
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "18px 'Arial'";
+                ctx.fillText(`${symbol}＝${guess}`, drawX, 490);
+            }
+
+            // 操作ガイド
+            ctx.fillStyle = "#aaa";
+            ctx.font = "13px 'Arial'";
+            ctx.fillText("【操作】 矢印キー(↑↓←→)でマスを選択  |  Shift + [A～Z] で辞書に登録", canvas.width / 2, 535);
+            ctx.fillStyle = "#4ecca3";
+            ctx.font = "bold 15px 'Arial'";
+            ctx.fillText("自信ができたら 【 Enter 】 キーを押して、すべての単語を判定せよ！", canvas.width / 2, 565);
+        }
+
+        function drawResult() {
+            ctx.fillStyle = "#0f3460";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#4ecca3";
+            ctx.font = "bold 42px 'Arial'";
+            ctx.textAlign = "center";
+            ctx.fillText("完全解読、成功！！", canvas.width / 2, 200);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "20px 'Arial'";
+            ctx.fillText("解き明かされた古代の言葉：", canvas.width / 2, 260);
+            
+            // 正解を表示
+            for(let i=0; i<gameData.correctAnswers.length; i++) {
+                ctx.fillText(`単語 ${i+1}: ${gameData.correctAnswers[i]}`, canvas.width / 2, 305 + (i * 35));
+            }
+
+            ctx.fillStyle = "#f5b041";
+            ctx.font = "24px 'Arial'";
+            ctx.fillText(`総解読時間: ${gameData.timer.toFixed(1)} 秒`, canvas.width / 2, 430);
+
+            ctx.fillStyle = "#aaa";
+            ctx.font = "16px 'Arial'";
+            ctx.fillText("[ Press Space to Title ]", canvas.width / 2, 510);
+        }
+
+        // ------------------------------------------
+        // 7. メインループ
+        // ------------------------------------------
+        function mainLoop() {
+            update();
+            draw();
+            requestAnimationFrame(mainLoop);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
