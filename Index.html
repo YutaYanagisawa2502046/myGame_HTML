@@ -1,174 +1,238 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <title>言語解読アドベンチャー</title>
-        <style>
-            body 
-            {
-                background: #1a1a2e;
-                color: #e0e0e0; font-family:
-                'Courier New', monospace; display:
-                flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 20px;
+<head>
+    <meta charset="UTF-8">
+    <title>古代言語解読の冒険</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: #d1d5db;
+            font-family: 'Palatino Linotype', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
-            #game-container 
-            {
-                display: flex;
-                gap: 20px;
-               max-width: 900px;
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-            .panel 
-            {
-                background: #0f3460;
-                padding: 20px;
-                border-radius: 8px;
-                flex: 1;
-                height: 500px;
-                overflow-y: auto;
-            }
-            #main-area
-            {
-                width: 350px;
-                display: flex;
-                flex-direction:column;
-                align-items: center;
-            }
-            .stack-container
-            {
-                display: flex;
-                flex-direction: column-reverse;
-                height: 350px;
-                border-bottom: 4px solid #52de97;
-                width: 100%;
-                margin-bottom: 20px; }
-                .box
-                {
-                    background: #52de97;
-                    color: #1a1a2e;
-                    padding: 10px;
-                    margin: 4px;
-                    text-align: center;
-                    border-radius: 4px;
-                    font-weight: bold;
-                }
-                input 
-                {
-                    padding: 8px;
-                    width: 80%;
-                    margin-bottom: 10px;
-                }
-                button
-                {
-                    padding: 8px 15px;
-                    cursor: pointer;
-                }
-                </style>
-    </head>
+        }
+
+        .panel {
+            background: #e5d3b3;
+            color: #4a3728;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            height: 500px;
+            overflow-y: auto;
+            border: 2px solid #854d0e;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        }
+
+        #dict-list p {
+            animation: fadeIn 0.5s ease-out;
+            margin: 5px 0;
+            border-bottom: 1px dashed #b45309;
+        }
+
+        .stack-container {
+            display: flex;
+            flex-direction: column-reverse;
+            height: 300px;
+            border: 4px ridge #b45309;
+            width: 100%;
+            margin-bottom: 20px;
+            background: #1e293b;
+            overflow-y: auto;
+        }
+
+        .box {
+            background: #52de97;
+            color: #064e3b;
+            padding: 10px;
+            margin: 4px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        #game-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        #main-area {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input {
+            padding: 10px;
+            width: 90%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #b45309;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
 <body>
 
-<h1>言語学者の調査記録：異世界の孤立語</h1>
+    <h1>古代言語解読の冒険</h1>
 
-<div id="game-container">
-    <div class="panel">
-        <h3>解読辞書</h3>
-        <div id="dict-list"></div>
+    <div id="game-container">
+        <div class="panel">
+            <h3>解読辞書</h3>
+            <div id="dict-list"></div>
+        </div>
+
+        <div id="main-area">
+            <div id="stack" class="stack-container"></div>
+            <p id="problem">読み込み中...</p>
+            <p id="crypto-text"></p>
+            <input type="text" id="input" placeholder="翻訳を入力">
+            <button onclick="check()">解読する</button>
+        </div>
+
+        <div class="panel">
+            <h3>調査日誌</h3>
+            <div id="story-area"></div>
+            <hr>
+            <div id="notes"></div>
+        </div>
     </div>
 
-    <div id="main-area">
-        <div id="stack" class="stack-container"></div>
-        <p id="problem">看板: 読み込み中...</p>
-        <input type="text" id="input" placeholder="翻訳 (例: 果物 行く 店)">
-        <button onclick="check()">積み上げる</button>
-    </div>
+    <script src="Dictionary.js"></script>
+    <script src="Questions.js"></script>
+    <script src="Story.js"></script>
 
-    <div class="panel">
-        <h3>考察メモ</h3>
-        <div id="notes"></div>
-    </div>
-</div>
+    <script>
+        let meaningToEnglish = {};
+        let currentQuestionCorrect = 0;
 
-<script src="Dictionary.js"></script>
-<script src="Questions.js"></script>
-<script>
-    let dictionary = {};
-    let meaningToEnglish = {}; 
-
-    function encodeWord(englishWord) {
-        const word = englishWord.toLowerCase();
-        const keyboard = "qwertyuiopasdfghjklzxcvbnm";
-        const shifted =  "fghjklzxcvbnmqwertyuiopasd";
-        let encoded = "";
-        for (let char of word) {
-            let index = keyboard.indexOf(char);
-            encoded += (index !== -1) ? shifted[index] : char;
-        }
-        return encoded.slice(0, 2) + Math.floor(Math.random() * 9) + encoded.slice(2);
-    }
-
-    function init() {
-        // 1. 表記ゆれ吸収用逆引き辞書の作成
-        for (let eng in sourceDictionary) {
-            let jp = sourceDictionary[eng];
-            if (!meaningToEnglish[jp]) meaningToEnglish[jp] = [];
-            meaningToEnglish[jp].push(eng.toLowerCase());
+        function init() {
+            // 逆引き辞書と暗号化辞書の生成
+            for (let eng in sourceDictionary) {
+                let jp = sourceDictionary[eng];
+                if (!meaningToEnglish[jp]) meaningToEnglish[jp] = [];
+                meaningToEnglish[jp].push(eng.toLowerCase());
+                englishToSecret[eng] = encodeWord(eng);
+            }
+            document.getElementById('story-area').innerHTML = Story[0];
+            console.log("初期化完了、問題を表示します");
+            nextProblemUI();
         }
 
-        // 2. 暗号化辞書の作成
-        for (let eng in sourceDictionary) {
-            englishToSecret[eng] = encodeWord(eng);
-            dictionary[englishToSecret[eng]] = sourceDictionary[eng];
-        }
-        
-        // 辞書リスト表示
-        const list = document.getElementById('dict-list');
-        list.innerHTML = Object.entries(dictionary).map(([k, v]) => `<p>${k} = ${v}</p>`).join('');
-        
-        nextProblem();
-    }
+        // 表示更新用の関数
+        function nextProblemUI() {
+            const q = nextProblem(); // Questions.jsの関数を呼ぶ
 
-    function check() {
-        const input = document.getElementById('input');
-        const userWords = input.value.trim().split(/\s+/);
-        
-        if (userWords.length !== currentQuestionWords.length) {
-            alert("単語の数が違うようです。");
-            return;
+            // 画面の更新
+            document.getElementById('problem').innerText = `看板の様子: ${q.desc}`;
+            document.getElementById('crypto-text').innerText = `暗号: ${makeProblemText(currentQuestionWords)}`;
+            document.getElementById('input').value = '';
         }
 
-        // 判定処理
-        let isCorrect = userWords.every((u, i) => {
-            const possibleEngs = meaningToEnglish[sourceDictionary[currentQuestionWords[i]]];
-            return possibleEngs && possibleEngs.includes(u.toLowerCase());
-        });
-
-        if(isCorrect) {
-            // 1. スタック（看板）の見た目を更新
-            const stack = document.getElementById('stack');
-            const box = document.createElement('div');
-            box.className = 'box';
-            
-            // 日本語訳を作成
-            const translatedText = currentQuestionWords.map(w => sourceDictionary[w]).join(' ');
-            box.innerText = translatedText;
-            stack.appendChild(box);
-
-            // 2. 【ここが新機能】考察メモに追加する処理
-            const notes = document.getElementById('notes');
-            const noteEntry = document.createElement('p');
-            noteEntry.innerHTML = `<strong>解読成功:</strong> ${translatedText} <br><small>原語: ${currentQuestionWords.join(' ')}</small>`;
-            notes.prepend(noteEntry); // 新しい順に一番上に表示
-
-            input.value = "";
-            nextProblem();
-        } else {
-            alert("その解釈は文法的に正しくない。");
+        function encodeWord(englishWord) {
+            const word = englishWord.toLowerCase();
+            const keyboard = "qwertyuiopasdfghjklzxcvbnm";
+            const shifted = "fghjklzxcvbnmqwertyuiopasd";
+            let encoded = "";
+            for (let char of word) {
+                let index = keyboard.indexOf(char);
+                encoded += (index !== -1) ? shifted[index] : char;
+            }
+            return encoded.slice(0, 2) + Math.floor(Math.random() * 9) + encoded.slice(2);
         }
-    }
 
-    window.onload = init;
-</script>
+        function check() {
+            const input = document.getElementById('input');
+            const userWords = input.value.trim().split(/\s+/);
+
+            // 1. 個数のチェック（最低限必要）
+            if (userWords.length !== currentQuestionWords.length) {
+                alert("単語の数が違うようです。");
+                return;
+            }
+
+            // 2. 柔軟な正解判定（順序を問わず、全ての単語が正解に含まれているか）
+            // 問題の英語単語リストを小文字化して取得
+            const targetEnglishWords = currentQuestionWords.map(w => w.toLowerCase());
+
+            // 入力された単語が、問題の単語に対応する日本語のどれかであるかチェック
+            // 柔軟な正解判定
+
+            console.log("ユーザーの入力:", userWords);
+            console.log("問題の英単語リスト:", currentQuestionWords);
+
+            // 判定処理
+            // 判定部分をシンプルに書き換え
+            let isCorrect = userWords.every((u, i) => {
+                const targetEng = currentQuestionWords[i];
+                const correctJp = sourceDictionary[targetEng]; // 正解の日本語
+
+                console.log(`詳細チェック: 入力'${u}' vs 正解日本語'${correctJp}'`);
+
+                // 入力と正解を「トリム（前後の空白削除）」して比較
+                return u.trim() === correctJp.trim();
+            });
+
+            if (isCorrect) {
+                // 辞書への追加と表示
+                const list = document.getElementById('dict-list');
+                currentQuestionWords.forEach(eng => {
+                    // 暗号化した文字を取得（Questions.js で生成したもの）
+                    const secret = englishToSecret[eng];
+
+                    // IDも暗号化された文字を基準にする（重複防止）
+                    if (!document.getElementById('dict-' + secret)) {
+                        const entry = document.createElement('p');
+                        entry.id = 'dict-' + secret;
+                        // 表示を「暗号 = 日本語」にする
+                        entry.innerText = `${secret} = ${sourceDictionary[eng]}`;
+                        list.appendChild(entry);
+                    }
+                });
+
+                // ストーリー進行（レベル0→1）
+                if (currentLevel === 0) {
+                    currentLevel = 1;
+                    document.getElementById('story-area').innerHTML = Story[1];
+                }
+                //もしレベル1以降も自動で進めたいなら、ここに追加する
+                else {
+                    currentLevel++;
+                    document.getElementById('story-area').innerHTML = Story[currentLevel];
+                }
+
+                input.value = "";
+                // 次の問題があるか確認して、なければレベルを上げる
+    const currentQuestions = questionLevels[currentLevel];
+                nextProblemUI();
+            } else {
+                alert("解釈が正しくありません");
+            }
+        }
+        window.onload = init;
+    </script>
 </body>
 </html>

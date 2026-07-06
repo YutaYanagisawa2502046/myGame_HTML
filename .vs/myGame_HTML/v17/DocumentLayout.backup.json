@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Dictionary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Dictionary.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Questions.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Questions.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -30,39 +30,39 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Dictionary.js",
               "DocumentMoniker": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Dictionary.js",
               "RelativeDocumentMoniker": "Dictionary.js",
               "ToolTip": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Dictionary.js",
               "RelativeToolTip": "Dictionary.js",
-              "ViewState": "AgIAAGsAAAAAAAAAAAAAAIIAAAACAAAAAAAAAA==",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAAAJcAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-07-01T02:59:54.941Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Index.html",
               "DocumentMoniker": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Index.html",
               "RelativeDocumentMoniker": "Index.html",
               "ToolTip": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Index.html",
               "RelativeToolTip": "Index.html",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAAAE0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAKAAAAAAAAAAAAAAAL0AAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
               "WhenOpened": "2026-07-01T02:59:17.48Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Questions.js",
               "DocumentMoniker": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Questions.js",
               "RelativeDocumentMoniker": "Questions.js",
               "ToolTip": "C:\\Users\\student\\Desktop\\\u7406\u8AD6\u3068\u304B\u3082\u308D\u3082\u308D\\myGame_HTML\\Questions.js",
               "RelativeToolTip": "Questions.js",
-              "ViewState": "AgIAACoAAAAAAAAAAAAAAAwAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAowJgAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-07-01T02:59:16.465Z",
               "EditorCaption": ""
