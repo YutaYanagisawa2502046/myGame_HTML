@@ -3,128 +3,128 @@
 const level0Questions = [
     {
         words: ["Hello", "Traveler", "Welcome"],
-        desc: "街の前におかれている看板。親しみやすいデザインで彩られている"
+        desc: "街の前に置かれた看板。親しみやすいデザインで彩られている。"
     }
 ];
 
 // Level1 看板
 const level1Questions = [
-  { 
-    words: ["Fruit", "Sell", "Shop"], 
-    desc: "ひび割れた木製の看板。果物の絵が描かれている。" 
-  },        
+  {
+    words: ["Fruit", "Sell", "Shop"],
+    desc: "ひび割れた木製の看板。果物の絵が描かれている。"
+  },
   {
     words: ["Tea", "Buy", "Shop"],
-    desc: "上品に見える色合いの看板。葉っぱの絵が描かれている"
- },
+    desc: "上品な色合いの看板。葉っぱの絵が描かれている。"
+  },
   {
-    words:["Bread", "Buy", "Shop"],
-    desc:"小さなパン屋の看板。パンの絵が描かれている。"
-},
+    words: ["Bread", "Buy", "Shop"],
+    desc: "小さなパン屋の看板。パンの絵が描かれている。"
+  },
   {
-    words:["Stone", "Buy", "Shop"],
-    desc:"石の店の看板。石の絵が描かれている。"
-},
+    words: ["Stone", "Buy", "Shop"],
+    desc: "石屋の看板。石の絵が描かれている。"
+  },
   {
-    words:["River", "Find", "Cave"],
-    desc:"川の近くにある洞窟の看板。"
-}
+    words: ["River", "Find", "Cave"],
+    desc: "川の近くにある洞窟の看板。"
+  }
 ];
 
 // Level2 会話
 const level2Questions = [
   {
-    words: ["Please", "Buy", "Bread"], 
-    desc: "パンを押し付けて、頼んでくる"
-},
+    words: ["Please", "Buy", "Bread"],
+    desc: "パンを押しつけるように頼んでくる人物の様子。"
+  },
   {
-    words: ["Help", "Please"], 
-    desc: "助けてください。"
-},
+    words: ["Help", "Please"],
+    desc: "助けてくださいと頼んでいる声。"
+  },
   {
-    words: ["Where", "Buy", "Tea"], 
-    desc: "お茶を買うところはどこですか？"
-},
+    words: ["Where", "Buy", "Tea"],
+    desc: "お茶を買う場所を尋ねている会話。"
+  },
   {
-    words: ["Need", "Water", "Drink"], 
-    desc: "水を飲みたいです。"
-},
+    words: ["Need", "Water", "Drink"],
+    desc: "水を飲みたいという気持ちが伝わる会話。"
+  },
   {
-    words: ["Who", "Guard", "Castle"], 
-    desc: "城を守る人を訪ねているようだ。"
-}
+    words: ["Who", "Guard", "Castle"],
+    desc: "城を守る人物を訪ねているようだ。"
+  }
 ];
 
 // Level3 絵本
 const level3Questions = [
   {
     words: ["Cat", "Drink", "Water"],
-     desc: "猫が水を飲んでいる絵だ。"
-    },
+    desc: "猫が水を飲んでいる絵。"
+  },
   {
     words: ["Bird", "Fly", "Sky"],
-     desc: "鳥が空を飛んでいる絵。"
-    },
+    desc: "鳥が空を飛んでいる絵。"
+  },
   {
     words: ["Dog", "Run", "Home"],
-     desc: "犬が家を走っている絵。"
-    },
+    desc: "犬が家を走っている絵。"
+  },
   {
-    words: ["Tree", "See", "River"], 
-    desc: "木々が川を見ているように生えてる絵。"
-},
+    words: ["Tree", "See", "River"],
+    desc: "木々が川を見ているように生えている絵。"
+  },
   {
     words: ["Child", "Find", "Light"],
-     desc: "子供が光を見つけた絵。"
-    }
+    desc: "子供が光を見つけた絵。"
+  }
 ];
 
 // Level4 辞書
 const level4Questions = [
   {
     words: ["Big", "Stone", "Carry"],
-     desc: "大きな石を運ぶ人が描かれている。"
-    },
+    desc: "大きな石を運ぶ人物が描かれている。"
+  },
   {
     words: ["Red", "Wear", "Shop"],
-     desc: "赤い服を買う人だ。"
-    },
+    desc: "赤い服を買う人物の絵。"
+  },
   {
     words: ["Happy", "Friend", "Talk"],
-     desc: "嬉しそうに友達と話す絵だ。"
-    },
+    desc: "嬉しそうに友達と話す絵。"
+  },
   {
     words: ["Dark", "Night", "Sky"],
-     desc: "光がほとんどない夜の空だ。"
-    },
+    desc: "光がほとんどない夜の空。"
+  },
   {
     words: ["Small", "Magic", "Potion"],
-     desc: "小さな魔法の薬が描かれている。"
-    }
+    desc: "小さな魔法の薬が描かれている。"
+  }
 ];
 
 // Level5 遺跡の古文書
 const level5Questions = [
   {
-    words: ["Magic", "Potion", "Trial", "Guard"], 
-    desc: "魔法の薬瓶を持ち、何か守っているものの前に立つ者の絵"
-},
+    words: ["Magic", "Potion", "Trial", "Guard"],
+    desc: "魔法の薬瓶を持ち、何かを守る者の絵。"
+  },
   {
-    words: ["Enemy", "King", "Attack", "Gate"], 
-    desc: "一際大きい敵が門に向かって剣を振り下ろす絵だ"
-},
+    words: ["Enemy", "King", "Attack", "Gate"],
+    desc: "大きな敵が門に向かって剣を振り下ろす絵。"
+  },
   {
-    words: ["Monster", "Protect", "Treasure", "Temple"], 
-    desc: "モンスターが寺の宝を守っている絵が描いてある"
-},
+    words: ["Monster", "Protect", "Treasure", "Temple"],
+    desc: "モンスターが寺の宝を守っている絵。"
+  },
   {
-    words: ["Spell", "Cast", "Barrier", "Night"], 
-    desc: "夜に詠唱された呪文により防壁が崩れる絵"
-},
+    words: ["Spell", "Cast", "Barrier", "Night"],
+    desc: "夜に詠唱された呪文によって防壁が崩れる絵。"
+  },
   {
-    words: ["Guardian", "Defend", "Ancient", "Ruins"], 
-    desc: "守護者が古代の遺跡を防御している絵"
-}
+    words: ["Guardian", "Defend", "Ancient", "Ruins"],
+    desc: "守護者が古代の遺跡を防御している絵。"
+  }
 ];
 
 const questionLevels = {

@@ -109,7 +109,7 @@
             <div id="stack" class="stack-container"></div>
             <p id="problem">読み込み中...</p>
             <p id="crypto-text"></p>
-            <input type="text" id="input" placeholder="翻訳を入力">
+            <input type="text" id="input" placeholder="翻訳を入力してください">
             <button onclick="check()">解読する</button>
         </div>
 
@@ -138,7 +138,7 @@
                 englishToSecret[eng] = encodeWord(eng);
             }
             document.getElementById('story-area').innerHTML = Story[0];
-            console.log("初期化完了、問題を表示します");
+            console.log("初期化が完了しました。問題を表示します。");
             nextProblemUI();
         }
 
@@ -169,7 +169,7 @@
         const userWords = input.value.trim().split(/\s+/);
         
         if (userWords.length !== currentQuestionWords.length) {
-            alert("単語の数が違います。");
+            alert("単語の数が一致しません。");
             return;
         }
 
@@ -203,7 +203,7 @@ let isCorrect = userWords.every((u, i) => {
                 // 全問正解でレベルアップ
                 currentLevel++;
                 currentQuestionIndex = 0;
-                alert("レベルアップ！次の物語へ進みます。");
+                alert("レベルアップしました。次の物語へ進みます。");
                 if (Story[currentLevel]) {
                     document.getElementById('story-area').innerHTML = Story[currentLevel];
                 }
@@ -212,7 +212,7 @@ let isCorrect = userWords.every((u, i) => {
             }
             nextProblemUI();
         } else {
-            alert("解釈が正しくありません。");
+            alert("解釈が正しくありません。もう一度確認してください。");
         }
     }
         window.onload = init;
