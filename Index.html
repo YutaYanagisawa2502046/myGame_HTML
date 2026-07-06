@@ -174,8 +174,18 @@
         }
 
         let isCorrect = userWords.every((u, i) => {
-            const targetJp = sourceDictionary[currentQuestionWords[i]];
-            return u.trim() === targetJp.trim();
+            const targetEng = currentQuestionWords[i];
+            const correctJp = sourceDictionary[targetEng];
+            
+            // トリムして比較する前の値をログに出す
+            console.log(`【デバッグ】比較中: 入力値'${u}' vs 辞書登録値'${correctJp}'`);
+            
+            // 完全一致かどうかをチェック
+            const match = (u.trim() === correctJp.trim());
+            if (!match) {
+                console.warn(`一致しませんでした！文字コード比較: 入力長${u.length} vs 登録値長${correctJp.length}`);
+            }
+            return match;
         });
 
         if(isCorrect) {
