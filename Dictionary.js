@@ -54,7 +54,6 @@ const sourceDictionary = {
     "Meat": "肉",
     "Meat": "にく",
     "Bread": "パン",
-    "Bread": "ぱん",
     "Wear": "服",
     "Water": "水",
     "Tea": "お茶",
