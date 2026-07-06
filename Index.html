@@ -164,15 +164,16 @@
 
         
     // Index.html の判定ロジックを以下のように変更
+// Index.html の check 関数内での判定ロジック
 let isCorrect = userWords.every((u, i) => {
     const targetEng = currentQuestionWords[i];
-    const correctJpList = sourceDictionary[targetEng];
+    const correctJpList = sourceDictionary[targetEng]; // sourceDictionaryはDictionary_3.jsのデータ
     
-    // 入力値の前後スペースを削除し、全角カタカナをひらがなにするなどの工夫をするとより強固になります
-    const normalizedInput = u.trim(); 
+    // 入力値の前後空白を削除し、句読点も除去して比較用にする
+    const cleanInput = u.trim().replace(/[。！？\s]/g, ""); 
     
-    // 辞書にある候補のいずれかと完全に一致すれば正解
-    return correctJpList.some(correctJp => normalizedInput === correctJp.trim());
+    // 辞書リストのいずれかと完全一致するかチェック
+    return correctJpList.some(correctJp => cleanInput === correctJp);
 });
 
         if(isCorrect) {
