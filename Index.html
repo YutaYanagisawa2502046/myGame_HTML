@@ -63,7 +63,6 @@
 
         #main-area {
             width: 300px;
-            height: 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -169,17 +168,11 @@ let isCorrect = userWords.every((u, i) => {
     const targetEng = currentQuestionWords[i];
     const correctJpList = sourceDictionary[targetEng];
     
-    // 入力された文字を「正規化」して比較する
-    // 1. 前後のスペースを削除
-    // 2. 「。」などの句読点が含まれていたら削除（誤入力対策）
-    const normalizedInput = u.trim().replace(/[。、！？\s]/g, ""); 
+    // 入力値の前後スペースを削除し、全角カタカナをひらがなにするなどの工夫をするとより強固になります
+    const normalizedInput = u.trim(); 
     
-    // リストの中に一致するものがあるかチェック
-    // さらに、各正解候補も同様に「正規化」して比較対象を広げます
-    return correctJpList.some(correctJp => {
-        const normalizedCorrect = correctJp.replace(/[。、！？\s]/g, "");
-        return normalizedInput === normalizedCorrect;
-    });
+    // 辞書にある候補のいずれかと完全に一致すれば正解
+    return correctJpList.some(correctJp => normalizedInput === correctJp.trim());
 });
 
         if(isCorrect) {
