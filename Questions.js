@@ -136,6 +136,7 @@ const questionLevels = {
     5: level5Questions
 };
 
+
 let currentLevel = 0;
 let currentQuestionWords = [];
 let englishToSecret = {};
