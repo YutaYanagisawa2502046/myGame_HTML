@@ -174,21 +174,15 @@
         }
 
         
-        let isCorrect = userWords.every((u, i) => {
-            const targetEng = currentQuestionWords[i];
-            const correctJp = sourceDictionary[targetEng];
-            
-            // トリムして比較する前の値をログに出す
-            console.log(`【デバッグ】比較中: 入力値'${u}' vs 辞書登録値'${correctJp}'`);
-            
-            // 完全一致かどうかをチェック
-            const match = (u.trim() === correctJp.trim());
-            if (!match) {
-                console.warn(`一致しませんでした！文字コード比較: 入力長${u.length} vs 登録値長${correctJp.length}`);
-            }
-            return match;
-            console.log("");
-        });
+    // Index.html の判定ロジックを以下のように変更
+let isCorrect = userWords.every((u, i) => {
+    const targetEng = currentQuestionWords[i];
+    const correctJpList = sourceDictionary[targetEng];
+    
+    // 入力値が、リストの中のどれかの「先頭部分」と一致すれば正解とする
+    // これにより「売る」という辞書に対し「売っている」と入力されても判定可能になります
+    return correctJpList.some(correctJp => u.trim().startsWith(correctJp.trim()));
+});
 
         if(isCorrect) {
             // 辞書更新
