@@ -153,6 +153,13 @@
             return encoded.slice(0, 2) + Math.floor(Math.random() * 9) + encoded.slice(2);
         }
 
+function toHiragana(str) {
+    return str.replace(/[\u30a1-\u30f6]/g, function(match) {
+        let chr = match.charCodeAt(0) - 0x60;
+        return String.fromCharCode(chr);
+    });
+}
+
         function check() {
         const input = document.getElementById('input');
         const userWords = input.value.trim().split(/\s+/);
@@ -167,13 +174,16 @@
 // Index.html の check 関数内での判定ロジック
 let isCorrect = userWords.every((u, i) => {
     const targetEng = currentQuestionWords[i];
-    const correctJpList = sourceDictionary[targetEng]; // sourceDictionaryはDictionary_3.jsのデータ
+    const correctJpList = sourceDictionary[targetEng];
     
-    // 入力値の前後空白を削除し、句読点も除去して比較用にする
-    const cleanInput = u.trim().replace(/[。！？\s]/g, ""); 
+    // 入力値を掃除してひらがなにする
+    const normalizedInput = toHiragana(u.trim().replace(/[。！？\s]/g, ""));
     
-    // 辞書リストのいずれかと完全一致するかチェック
-    return correctJpList.some(correctJp => cleanInput === correctJp);
+    // 辞書リストの候補もひらがなにして比較
+    return correctJpList.some(correctJp => {
+        const normalizedCorrect = toHiragana(correctJp.replace(/[。！？\s]/g, ""));
+        return normalizedInput === normalizedCorrect;
+    });
 });
 
         if(isCorrect) {
